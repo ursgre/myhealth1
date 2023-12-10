@@ -4,10 +4,10 @@
 }
 
 :root{
-  --col: #03c9bf;
+  --col: #007bff;
 }
 
 body{
-  background-color: black;
+  background-color: rgb(24, 22, 22);
   
 }
