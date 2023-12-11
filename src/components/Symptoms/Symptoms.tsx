@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import './symptoms.css'
 
 
-
-
 interface Symptom {
-    id: number;
-    name: string;
-    caption: string;
-  }
-  
+  id: number; 
+  name: string;
+  caption: string;
+}
+
+
   const symptomsData: Symptom[] = [
     {
         id: 1,
@@ -44,11 +43,24 @@ interface Symptom {
   ];
   
   function Symptoms() {
+    const [symptomsData, setSymptomsData] = useState<Symptom[]>([]);
     const [selectedSymptom, setSelectedSymptom] = useState<Symptom | null>(null);
     const [recordedSymptoms, setRecordedSymptoms] = useState<{ symptom: Symptom; date: string }[]>([]);
     const [searchDate, setSearchDate] = useState<string>('');
     const [searchedSymptoms, setSearchedSymptoms] = useState<{ symptom: Symptom; date: string }[]>([]);
     const [groupedSymptoms, setGroupedSymptoms] = useState<Record<string, { symptom: Symptom; date: string }[]>>({});
+  
+    useEffect(() => {
+    
+      fetch('/api/symptoms') //i need to change here
+        .then((response) => response.json())
+        .then((data) => {
+          setSymptomsData(data);
+        })
+        .catch((error) => {
+          console.error('Error fetching symptoms:', error);
+        });
+    }, []);
   
     useEffect(() => {
       const grouped = recordedSymptoms.reduce((acc: Record<string, { symptom: Symptom; date: string }[]>, record) => {
@@ -124,21 +136,21 @@ interface Symptom {
   
         <h2>Recorded Symptoms</h2>
         {Object.keys(groupedSymptoms).map((date) => (
-      <div key={date}>
-        <h3>{date}</h3>
-        <ul className="recorded-symptoms">
-          {groupedSymptoms[date].map((record, index) => (
-            <li key={index}>
-              <div>
-                <strong>{record.symptom.name}</strong>
-                <button onClick={() => handleDeleteSymptom(date, index)}>Delete</button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-    ))}
-
+          <div key={date}>
+            <h3>{date}</h3>
+            <ul className="recorded-symptoms">
+              {groupedSymptoms[date].map((record, index) => (
+                <li key={index}>
+                  <div>
+                    <strong>{record.symptom.name}</strong>
+                    <button onClick={() => handleDeleteSymptom(date, index)}>Delete</button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+  
         <div className="search-container">
           <form onSubmit={handleSearch}>
             <input

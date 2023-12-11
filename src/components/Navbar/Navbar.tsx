@@ -13,10 +13,10 @@ const Navbar = () => {
     <nav>
         <Image src={logo} alt="Logo" />
         <Link href='/'>Home</Link>
-        <Link href='/profile'>Profile</Link>
         <Link href='/calculators'>Calculators</Link>
         <Link href='/calendar'>Calendar</Link>
         <Link href='/symptoms'>Symptoms</Link>
+        <Link href='/medicine'>Medicine</Link>
         <button>Logout</button>
      
     </nav>
