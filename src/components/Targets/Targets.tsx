@@ -37,14 +37,7 @@ const Targets = () => {
           "goal": 3000,
           "goalUnit": "ml"
         },
-        {
-          "name": "Weight",
-          "value": 75,
-          "unit": "kg",
-          "goal": 70,
-          "goalUnit": "kg"
-        },
-        
+      
       ]
       setData(temp)
       console.log(temp)
