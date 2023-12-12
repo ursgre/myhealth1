@@ -1,49 +1,75 @@
-// MedicineComponent.jsx
-
 import React, { useState, useEffect } from 'react';
 
-const MedicineComponent = () => {
-  const [medicines, setMedicines] = useState([]);
-  const [newMedicine, setNewMedicine] = useState({ name: '', dosage: '' });
+interface Medicine {
+  name: string;
+  dosage: string;
+  taken: boolean;
+}
+
+const Medicines = () => {
+  const [medicines, setMedicines] = useState<Medicine[]>([]);
+  const [newMedicine, setNewMedicine] = useState('');
+  const [newDosage, setNewDosage] = useState('');
+
+  const handleAddMedicine = () => {
+    if (newMedicine.trim() !== '' && newDosage.trim() !== '') {
+      const newMedicineObj: Medicine = {
+        name: newMedicine,
+        dosage: newDosage,
+        taken: false,
+      };
+      setMedicines([...medicines, newMedicineObj]);
+      setNewMedicine('');
+      setNewDosage('');
+    }
+  };
+
+  const handleDeleteMedicine = (index: number) => {
+    const updatedMedicines = medicines.filter((_, i) => i !== index);
+    setMedicines(updatedMedicines);
+  };
+
+  const handleEditMedicine = (index: number, field: keyof Medicine, value: string) => {
+    const updatedMedicines = medicines.map((medicine, i) =>
+      i === index ? { ...medicine, [field]: value } : medicine
+    );
+    setMedicines(updatedMedicines);
+  };
+
+  const handleToggleTaken = (index: number) => {
+    const updatedMedicines = medicines.map((medicine, i) =>
+      i === index ? { ...medicine, taken: !medicine.taken } : medicine
+    );
+    setMedicines(updatedMedicines);
+  };
 
   useEffect(() => {
-    fetch('/api/medicines')
-      .then(response => response.json())
-      .then(data => setMedicines(data))
-      .catch(error => console.error(error));
-  }, []);
+    const resetTakenStatus = () => {
+      const currentDate = new Date();
+      const midnight = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        currentDate.getDate() + 1, // Ustawiamy na następny dzień
+        0, 0, 0 // Godzina 00:00:00
+      );
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewMedicine({ ...newMedicine, [name]: value });
-  };
+      const timeUntilMidnight = midnight.getTime() - currentDate.getTime();
 
-  const addMedicine = () => {
-    fetch('/api/medicines', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newMedicine),
-    })
-      .then(response => response.json())
-      .then(data => {
-        setMedicines([...medicines, data]); // Update medicines state with the newly added medicine
-        setNewMedicine({ name: '', dosage: '' });
-      })
-      .catch(error => console.error(error));
-  };
-
-  const deleteMedicine = (id) => {
-    fetch(`/api/medicines/${id}`, {
-      method: 'DELETE',
-    })
-      .then(() => {
-        const updatedMedicines = medicines.filter(medicine => medicine._id !== id);
+      // Ustawienie timera na czas do północy
+      const timer = setTimeout(() => {
+        // Zmiana statusu wszystkich leków na "not taken"
+        const updatedMedicines = medicines.map(medicine => ({
+          ...medicine,
+          taken: false
+        }));
         setMedicines(updatedMedicines);
-      })
-      .catch(error => console.error(error));
-  };
+      }, timeUntilMidnight);
+
+      return () => clearTimeout(timer); // Czyszczenie timera po odświeżeniu komponentu
+    };
+
+    resetTakenStatus(); // Wywołanie funkcji resetowania statusu leków
+  }, [medicines]); // Dodanie zależności, aby useEffect wywoływał się przy zmianie leków
 
   return (
     <div>
@@ -52,24 +78,36 @@ const MedicineComponent = () => {
         <input
           type="text"
           placeholder="Medicine Name"
-          name="name"
-          value={newMedicine.name}
-          onChange={handleInputChange}
+          value={newMedicine}
+          onChange={(e) => setNewMedicine(e.target.value)}
         />
         <input
           type="text"
           placeholder="Dosage"
-          name="dosage"
-          value={newMedicine.dosage}
-          onChange={handleInputChange}
+          value={newDosage}
+          onChange={(e) => setNewDosage(e.target.value)}
         />
-        <button onClick={addMedicine}>Add Medicine</button>
+        <button onClick={handleAddMedicine}>Add Medicine</button>
       </div>
       <ul>
-        {medicines.map(medicine => (
-          <li key={medicine._id}>
-            <span>{medicine.name} - {medicine.dosage}</span>
-            <button onClick={() => deleteMedicine(medicine._id)}>Delete</button>
+        {medicines.map((medicine, index) => (
+          <li key={index}>
+            <input
+              type="checkbox"
+              checked={medicine.taken}
+              onChange={() => handleToggleTaken(index)}
+            />
+            <input
+              type="text"
+              value={medicine.name}
+              onChange={(e) => handleEditMedicine(index, 'name', e.target.value)}
+            />
+            <input
+              type="text"
+              value={medicine.dosage}
+              onChange={(e) => handleEditMedicine(index, 'dosage', e.target.value)}
+            />
+            <button onClick={() => handleDeleteMedicine(index)}>Delete</button>
           </li>
         ))}
       </ul>
@@ -77,4 +115,4 @@ const MedicineComponent = () => {
   );
 };
 
-export default MedicineComponent;
+export default Medicines;
