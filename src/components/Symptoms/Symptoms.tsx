@@ -9,7 +9,7 @@ interface Symptom {
 }
 
 
-  const symptomsData: Symptom[] = [
+  const symptomsData2: Symptom[] = [
     {
         id: 1,
         name: "Anxiety",
@@ -43,7 +43,7 @@ interface Symptom {
   ];
   
   function Symptoms() {
-    const [symptomsData, setSymptomsData] = useState<Symptom[]>([]);
+    const [symptomsData, setSymptomsData] = useState<Symptom[]>(symptomsData2);
     const [selectedSymptom, setSelectedSymptom] = useState<Symptom | null>(null);
     const [recordedSymptoms, setRecordedSymptoms] = useState<{ symptom: Symptom; date: string }[]>([]);
     const [searchDate, setSearchDate] = useState<string>('');

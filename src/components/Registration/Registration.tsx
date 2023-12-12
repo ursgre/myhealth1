@@ -2,38 +2,63 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 
 interface FormData {
-  name: string | null;
-  email: string | null;
-  password: string | null;
-  weightInKg: number | null;
-  heightInCm: number | null;
-  goal: string;
-  gender: string;
-  activityLevel: string;
-}
-
-const Registration: React.FC = () => {
-  const [formData, setFormData] = useState<FormData>({
-    name: null,
-    email: null,
-    password: null,
-    weightInKg: null,
-    heightInCm: null,
-    goal: 'weightLoss',
-    gender: 'male',
-    activityLevel: 'sedentary',
-  });
-
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // You can perform any action here, like sending the data to an API or processing it
-    console.log('Form submitted:', formData);
-  };
+    name: string | null;
+    email: string | null;
+    password: string | null;
+    weight: number | null;
+    height: number | null;
+    goal: string;
+    gender: string;
+    activityLevel: string;
+  }
+  
+  const Registration: React.FC = () => {
+    const [formData, setFormData] = useState<FormData>({
+      name: null,
+      email: null,
+      password: null,
+      weight: null,
+      height: null,
+      goal: 'weightLoss',
+      gender: 'male',
+      activityLevel: 'sedentary',
+    });
+  
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      const { name, value } = e.target;
+     if(name == "weight" || name == "height") {
+        setFormData({ ...formData, [name]: Number(value) });
+     }
+     else{
+        setFormData({ ...formData, [name]: value });
+     }
+    };
+  
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+  
+      try {
+        const response = await fetch('http://localhost:8080/user/register', {
+          method: 'POST', // Change the method based on your backend requirements
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Data received from backend:', data);
+          // Perform actions based on the data received from the backend
+        } else {
+          throw new Error('Error submitting form');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        // Handle error cases here
+      }
+    };
+  
 
   return (
     <div>
@@ -53,11 +78,11 @@ const Registration: React.FC = () => {
         </div>
         <div>
           <label>Weight (in kg):</label>
-          <input type="number" name="weightInKg" onChange={handleInputChange} />
+          <input type="number" name="weight" onChange={handleInputChange} />
         </div>
         <div>
           <label>Height (in cm):</label>
-          <input type="number" name="heightInCm" onChange={handleInputChange} />
+          <input type="number" name="height" onChange={handleInputChange} />
         </div>
         <div>
           <label>Goal:</label>
