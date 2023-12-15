@@ -31,6 +31,8 @@ const LoginPage: React.FC = () => {
 
       if (response.ok) {
         console.log('Login successful');
+        const data = await response.json();
+        localStorage.setItem("token", data.token)
         window.location.href = '/'; // Przeniesienie do strony "use client" po udanym logowaniu
       } else {
         console.error('Login failed');

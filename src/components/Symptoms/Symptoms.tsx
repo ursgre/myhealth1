@@ -50,16 +50,35 @@ interface Symptom {
     const [searchedSymptoms, setSearchedSymptoms] = useState<{ symptom: Symptom; date: string }[]>([]);
     const [groupedSymptoms, setGroupedSymptoms] = useState<Record<string, { symptom: Symptom; date: string }[]>>({});
   
-    useEffect(() => {
-    
-      fetch('/api/symptoms') //i need to change here
-        .then((response) => response.json())
-        .then((data) => {
-          setSymptomsData(data);
+    const userToken: string | null = localStorage.getItem("token")
+
+    const getAllSymptoms = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/symptom/getAllSymptoms', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            "Authorization" : `Bearer ${userToken}`
+          },
         })
-        .catch((error) => {
-          console.error('Error fetching symptoms:', error);
-        });
+
+        if (response.ok) {
+          console.log('symptoms added');
+          const data = await response.json();
+          console.log(data)
+         
+        } else {
+          console.error('calorie not added');
+        }
+
+        }
+        catch (error) {
+          console.error('Error occurred:', error);
+        }
+    }
+
+    useEffect(() => {
+      getAllSymptoms()
     }, []);
   
     useEffect(() => {
