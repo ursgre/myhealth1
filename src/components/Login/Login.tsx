@@ -31,19 +31,16 @@ const LoginPage: React.FC = () => {
 
       if (response.ok) {
         console.log('Login successful');
-        
+        window.location.href = '/'; // Przeniesienie do strony "use client" po udanym logowaniu
       } else {
         console.error('Login failed');
-        
       }
     } catch (error) {
       console.error('Error occurred:', error);
-     
     }
 
     setLoginData({ email: null, password: null });
   };
-
   return (
     <div>
       <h2>Login</h2>
