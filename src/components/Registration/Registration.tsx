@@ -2,63 +2,63 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 
 interface FormData {
-    name: string | null;
-    email: string | null;
-    password: string | null;
-    weight: number | null;
-    height: number | null;
-    goal: string;
-    gender: string;
-    activityLevel: string;
-  }
-  
-  const Registration: React.FC = () => {
-    const [formData, setFormData] = useState<FormData>({
-      name: null,
-      email: null,
-      password: null,
-      weight: null,
-      height: null,
-      goal: 'weightLoss',
-      gender: 'male',
-      activityLevel: 'sedentary',
-    });
-  
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-      const { name, value } = e.target;
-     if(name == "weight" || name == "height") {
-        setFormData({ ...formData, [name]: Number(value) });
-     }
-     else{
-        setFormData({ ...formData, [name]: value });
-     }
-    };
-  
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-  
-      try {
-        const response = await fetch('http://localhost:8080/user/register', {
-          method: 'POST', // Change the method based on your backend requirements
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
-        });
-  
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Data received from backend:', data);
-          // Perform actions based on the data received from the backend
-        } else {
-          throw new Error('Error submitting form');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        // Handle error cases here
+  name: string | null;
+  email: string | null;
+  password: string | null;
+  weight: number | null;
+  height: number | null;
+  goal: string;
+  gender: string;
+  activityLevel: string;
+}
+
+const Registration: React.FC = () => {
+  const [formData, setFormData] = useState<FormData>({
+    name: null,
+    email: null,
+    password: null,
+    weight: null,
+    height: null,
+    goal: 'weightLoss',
+    gender: 'male',
+    activityLevel: 'sedentary',
+  });
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    if (name === 'weight' || name === 'height') {
+      setFormData({ ...formData, [name]: Number(value) });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch('http://localhost:8080/user/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Data received from backend:', data);
+
+        // Redirect to the login page after successful registration
+        window.location.href = '/login';
+      } else {
+        throw new Error('Error submitting form');
       }
-    };
-  
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
 
   return (
     <div>
